@@ -1,0 +1,46 @@
+---
+// 1. Получаем данные
+const response = await fetch('https://api.advcake.ru/common-feeds?pass=lXPhODj_9-HkHurD');
+const json = await response.json();
+const allCourses = json.data || [];
+
+// 2. Определяем, какой именно курс открыть
+const { id } = Astro.params;
+const course = allCourses.find((c) => String(c.id) === id);
+
+// Если курс не найден
+if (!course) return Astro.redirect('/404');
+---
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{course.name} — купить курс в {course.school_name}</title>
+    <meta name="description" content={`Цена: ${course.price} руб. Обучение в школе ${course.school_name}. Записывайтесь на курс ${course.name} прямо сейчас.`} />
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333; }
+        .back { display: inline-block; margin-bottom: 20px; color: #007bff; text-decoration: none; }
+        .card { border: 1px solid #ddd; padding: 30px; border-radius: 20px; background: white; text-align: center; }
+        img { max-width: 300px; height: auto; margin-bottom: 20px; }
+        .price { font-size: 32px; font-weight: bold; color: #28a745; margin: 20px 0; }
+        .btn { display: block; background: #007bff; color: white; padding: 15px; border-radius: 10px; text-decoration: none; font-size: 1.2rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <a href="/" class="back">← Назад к списку</a>
+    
+    <div class="card">
+        <img src={course.image} alt={course.name} />
+        <h1>{course.name}</h1>
+        <p>Образовательная платформа: <strong>{course.school_name}</strong></p>
+        
+        <div class="price">{course.price} ₽</div>
+        
+        <p>Этот курс поможет вам освоить новые навыки и ускорить карьерный рост. Нажмите на кнопку ниже, чтобы узнать подробности на официальном сайте школы.</p>
+        
+        <a href={course.url} class="btn" target="_blank">Перейти к обучению</a>
+    </div>
+</body>
+</html>
+
